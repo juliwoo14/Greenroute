@@ -7,12 +7,12 @@ public class Eletroposto {
     private String localizacao;
     private int cidadeId;
     private String tiposConectoresDisponiveis;
-    private double potencialCargaKw;
+    private double potenciaCargaKw;
     private double precoPorKwh;
     private int vagasDisponiveis;
 
     public Eletroposto(int id, String nome, String localizacao, int cidadeId,
-                       String tiposConectoresDisponiveis, double potencialCargaKw, double precoPorKwh,
+                       String tiposConectoresDisponiveis, double potenciaCargaKw, double precoPorKwh,
                        int vagasDisponiveis){
 
         this.id = id;
@@ -20,7 +20,7 @@ public class Eletroposto {
         this.localizacao = localizacao;
         this.cidadeId = cidadeId;
         this.tiposConectoresDisponiveis = tiposConectoresDisponiveis;
-        this.potencialCargaKw = potencialCargaKw;
+        this.potenciaCargaKw = potenciaCargaKw;
         this.precoPorKwh = precoPorKwh;
         this.vagasDisponiveis = vagasDisponiveis;
     }
@@ -60,11 +60,11 @@ public class Eletroposto {
         this.tiposConectoresDisponiveis = tiposConectoresDisponiveis;
     }
 
-    public double getPotencialCargaKw() {
-        return potencialCargaKw;
+    public double getPotenciaCargaKw() {
+        return potenciaCargaKw;
     }
-    public void setPotencialCargaKw(double potencialCargaKw) {
-        this.potencialCargaKw = potencialCargaKw;
+    public void setPotenciaCargaKw(double potenciaCargaKw) {
+        this.potenciaCargaKw = potenciaCargaKw;
     }
 
     public double getPrecoPorKwh() {

@@ -6,7 +6,7 @@ public class VeiculoRepository {
     private Veiculo[] veiculos = new Veiculo[5];
     private int quantidadeAtual = 0;
 
-    public void casdastrar(Veiculo veiculo){
+    public void cadastrar(Veiculo veiculo){
         if (quantidadeAtual == veiculos.length){
             expandirArray();
         }

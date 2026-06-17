@@ -1,6 +1,6 @@
 package view;
 
-import controller.SistemaController;
+import controller.RotaControle;
 import model.Cidade;
 import model.Eletroposto;
 import model.Veiculo;
@@ -13,26 +13,39 @@ import repository.VeiculoRepository;
 import java.util.Scanner;
 
 public class SistemaView {
-    private SistemaController controller;
+    private RotaControle controller;
     private VeiculoRepository veiculoRepo;
     private CidadeRepository cidadeRepo;
     private EletropostoRepository eletropostoRepo;
-    
+
     // Geradores sequenciais de IDs para evitar repetições manuais
     private int idVeiculoSequencial = 1;
     private int idCidadeSequencial = 1;
     private int idEletropostoSequencial = 1;
 
-    public SistemaView(SistemaController controller, VeiculoRepository veiculoRepo, 
-                        CidadeRepository cidadeRepo, EletropostoRepository eletropostoRepo) {
+    public SistemaView(RotaControle controller, VeiculoRepository veiculoRepo,
+                       CidadeRepository cidadeRepo, EletropostoRepository eletropostoRepo) {
         this.controller = controller;
         this.veiculoRepo = veiculoRepo;
         this.cidadeRepo = cidadeRepo;
         this.eletropostoRepo = eletropostoRepo;
     }
 
+    private void executarSimulacaoRota(Scanner scanner) {
+
+        System.out.print("ID do veículo: ");
+        int veiculoId = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("ID da cidade destino: ");
+        int cidadeId = Integer.parseInt(scanner.nextLine());
+
+        controller.simularViagem(veiculoId, cidadeId);
+    }
+
     public void exibirMenuPrincipal() {
         Scanner scanner = new Scanner(System.in);
+
+        int opcaoPrincipal = -1;
 
         while (opcaoPrincipal != 0) {
             System.out.println("\n------GREENROUTE - MENU PRINCIPAL------");
@@ -42,7 +55,7 @@ public class SistemaView {
             System.out.println("4. Simular Rota Intermunicipal");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
-            
+
             try {
                 opcaoPrincipal = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -80,10 +93,11 @@ public class SistemaView {
             System.out.println("1. Cadastrar Veículo Elétrico");
             System.out.println("2. Cadastrar Veículo Híbrido");
             System.out.println("3. Listar Frota de Veículos");
-            System.out.println("4. Excluir Veículo por ID");
+            System.out.println("4. Atualizar Veículo por ID");
+            System.out.println("5. Excluir Veículo por ID");
             System.out.println("0. Voltar ao Menu Principal");
             System.out.print("Opção: ");
-            
+
             try {
                 opcao = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -109,7 +123,7 @@ public class SistemaView {
                     int tCompletoE = Integer.parseInt(scanner.nextLine());
 
                     VeiculoEletrico ve = new VeiculoEletrico(idVeiculoSequencial++, modE, autE, cargaE, conector, tRapido, consE, tCompletoE);
-                    veiculoRepo.casdastrar(ve); // Mantido o padrão do teu repositório 'casdastrar'
+                    veiculoRepo.cadastrar(ve);
                     System.out.println("Veículo Elétrico cadastrado com ID: " + (idVeiculoSequencial - 1));
                     break;
 
@@ -132,7 +146,7 @@ public class SistemaView {
                     String tComb = scanner.nextLine();
 
                     VeiculoHibrido vh = new VeiculoHibrido(idVeiculoSequencial++, modH, autH, cargaH, consH, tCompletoH, tanque, consComb, tComb);
-                    veiculoRepo.casdastrar(vh);
+                    veiculoRepo.cadastrar(vh);
                     System.out.println("Veículo Híbrido cadastrado com ID: " + (idVeiculoSequencial - 1));
                     break;
 
@@ -149,7 +163,25 @@ public class SistemaView {
                     }
                     break;
 
-                case 4: // Excluir
+                case 4: // Atualizar
+                    System.out.print("ID do veículo: ");
+                    int id = Integer.parseInt(scanner.nextLine());
+
+                    Veiculo v = veiculoRepo.buscarPorId(id);
+
+                    if(v != null){
+                        System.out.print("Novo modelo: ");
+                        v.setModelo(scanner.nextLine());
+
+                        veiculoRepo.atualizar(v);
+
+                        System.out.println("Atualizado.");
+                    } else {
+                        System.out.println("Erro: Veículo não encontrado.");
+                    }
+                    break;
+
+                case 5: // Excluir
                     System.out.print("Digite o ID do veículo a remover: ");
                     int idRemover = Integer.parseInt(scanner.nextLine());
                     if (veiculoRepo.excluir(idRemover)) {
@@ -158,6 +190,11 @@ public class SistemaView {
                         System.out.println("Erro: Veículo não encontrado.");
                     }
                     break;
+
+                default:
+                    if (opcao != 0) {
+                        System.out.println("Opção inválida! Tente novamente.");
+                    }
             }
         }
     }
@@ -168,10 +205,11 @@ public class SistemaView {
             System.out.println("\n--- SUBMENU: GERENCIAR CIDADES ---");
             System.out.println("1. Cadastrar Cidade");
             System.out.println("2. Listar Cidades");
-            System.out.println("3. Excluir Cidade por ID");
+            System.out.println("3. Atualizar Cidade por ID");
+            System.out.println("4. Excluir Cidade por ID");
             System.out.println("0. Voltar ao Menu Principal");
             System.out.print("Opção: ");
-            
+
             try {
                 opcao = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -205,7 +243,27 @@ public class SistemaView {
                     }
                     break;
 
+
                 case 3:
+                    System.out.print("ID da cidade: ");
+                    int id = Integer.parseInt(scanner.nextLine());
+
+                    Cidade c = cidadeRepo.buscarPorId(id);
+
+                    if(c != null){
+                        System.out.print("Novo nome: ");
+                        c.setNome(scanner.nextLine());
+
+                        cidadeRepo.atualizar(c);
+
+                        System.out.println("Atualizado.");
+                    } else {
+                        System.out.println("Erro: Cidade não encontrada.");
+                    }
+                    break;
+
+
+                case 4:
                     System.out.print("Digite o ID da cidade a remover: ");
                     int idRemover = Integer.parseInt(scanner.nextLine());
                     if (cidadeRepo.excluir(idRemover)) {
@@ -214,20 +272,26 @@ public class SistemaView {
                         System.out.println("Erro: Cidade não encontrada.");
                     }
                     break;
+
+                default:
+                    if (opcao != 0) {
+                        System.out.println("Opção inválida! Tente novamente.");
+                    }
             }
         }
     }
 
-   private void menuEletropostos(Scanner scanner) {
+    private void menuEletropostos(Scanner scanner) {
         int opcao = -1;
         while (opcao != 0) {
             System.out.println("\n--- SUBMENU: GERENCIAR ELETROPOSTOS ---");
             System.out.println("1. Cadastrar Eletroposto");
             System.out.println("2. Listar Todos os Eletropostos");
-            System.out.println("3. Excluir Eletroposto por ID");
+            System.out.println("3. Atualizar Eletroposto por ID");
+            System.out.println("4. Excluir Eletroposto por ID");
             System.out.println("0. Voltar ao Menu Principal");
             System.out.print("Opção: ");
-            
+
             try {
                 opcao = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
@@ -270,6 +334,24 @@ public class SistemaView {
                     break;
 
                 case 3:
+                    System.out.print("ID do eletroposto: ");
+                    int id = Integer.parseInt(scanner.nextLine());
+
+                    Eletroposto epAtualizar = eletropostoRepo.buscarPorId(id);
+
+                    if (epAtualizar != null) {
+                        System.out.print("Novo nome: ");
+                        epAtualizar.setNome(scanner.nextLine());
+
+                        eletropostoRepo.atualizar(epAtualizar);
+
+                        System.out.println("Atualizado.");
+                    } else {
+                        System.out.println("Eletroposto não encontrado.");
+                    }
+                    break;
+
+                case 4:
                     System.out.print("Digite o ID do eletroposto a remover: ");
                     int idRemover = Integer.parseInt(scanner.nextLine());
                     if (eletropostoRepo.excluir(idRemover)) {
@@ -278,6 +360,12 @@ public class SistemaView {
                         System.out.println("Erro: Eletroposto não encontrado.");
                     }
                     break;
+
+                default:
+                    if (opcao != 0) {
+                        System.out.println("Opção inválida! Tente novamente.");
+                    }
             }
         }
     }
+}
